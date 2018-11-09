@@ -7,7 +7,7 @@ class ResourcesGetter {
   }
 
   async init() {
-    this.browser = await puppeteer.launch({ headless: true });
+    this.browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   }
 
   async getByPageUrl(url) {
