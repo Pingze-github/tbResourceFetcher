@@ -54,7 +54,7 @@ async function main() {
 
   router.post('/fetch', async ctx => {
     if (ctx.request.body.key &&
-      (ctx.request.body.key.includes('detail.tmall.com/item.htm') || ctx.request.body.key.match(/http:\/\/m\.\w{1,6}\.top/))) {
+      (ctx.request.body.key.match(/detail(\.m){0,1}\.tmall\.com\/item\.htm/) || ctx.request.body.key.match(/http:\/\/m\.\w{1,6}\.top/))) {
 
       const matches = ctx.request.body.key.match(/http[\w\-\.,@?^=%&:\/~\+#]+/);
 
@@ -62,9 +62,11 @@ async function main() {
         return ctx.body = 'null';
       }
 
-      const key = matches[0];
+      let url = matches[0];
 
-      const resources = await reGetter.getByPageUrl(key);
+      url = url.replace('detail.tmall.com', 'detail.m.tmall.com');
+
+      const resources = await reGetter.getByPageUrl(url);
       console.log(resources);
       return ctx.body = JSON.stringify(resources);
     }
