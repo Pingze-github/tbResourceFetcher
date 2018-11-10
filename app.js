@@ -54,7 +54,7 @@ async function main() {
 
   router.post('/fetch', async ctx => {
     if (ctx.request.body.key &&
-      (ctx.request.body.key.includes('detail.tmall.com/item.htm') || ctx.request.body.key.includes('https://m.tb.cn/'))) {
+      (ctx.request.body.key.includes('detail.tmall.com/item.htm') || ctx.request.body.key.match(/http:\/\/m\.\w{1,6}\.top/))) {
 
       const matches = ctx.request.body.key.match(/http[\w\-\.,@?^=%&:\/~\+#]+/);
 
