@@ -1,0 +1,64 @@
+
+<input id="key" placeholder="分享链接" style="font-size: 20px;" />
+<button id="submit" style="font-size: 20px;">确认</button>
+<div id="msg"></div>
+<div id="result"></div>
+
+<script src="./jquery-3.2.1.min.js"></script>
+<script>
+
+  function renderResult(data) {
+    var $result = $('#result');
+    $result.html('');
+    $result.append('<h2>视频</h2>');
+    if (data.videos) {
+      for (var video of data.videos) {
+        $result.append(
+          $('<video controls="controls">此视频无法播放</video>').attr('src', video)
+        )
+      }
+    }
+    $result.append('<h2>封面</h2>');
+    for (var cover of data.covers) {
+      $result.append(
+        $('<img class="item image"/>').attr('src', cover)
+      )
+    }
+    $result.append('<h2>正文</h2>');
+    for (var pic of data.pictures) {
+      $result.append(
+        $('<img class="item image"/>').attr('src', pic)
+      )
+    }
+  }
+
+  $(document).ready(function(){
+    var fetching = false;
+    $('#key').click(() => {
+      $('#key').val('');
+    });
+    $('#submit').click(() => {
+      var key = $('#key').val();
+
+      if (fetching) return;
+      if (!key) return;
+
+      fetching = true;
+      $('#msg').text('正在获取...');
+      $('#result').html('');
+      $.post('/fetch' ,{key}, function (result) {
+        fetching = false;
+        if (result === 'null') {
+            $('#msg').text(result);
+        } else {
+          $('#msg').text('获取成功');
+          var data = JSON.parse(result);
+          renderResult(data);
+        }
+
+      })
+    });
+  });
+
+
+</script>

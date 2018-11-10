@@ -7,11 +7,10 @@ class ResourcesGetter {
   }
 
   async init() {
-    this.browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+    this.browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox']});
   }
 
   async getByPageUrl(url) {
-
 
     if (!this.browser) {
       await this.init();
@@ -25,32 +24,41 @@ class ResourcesGetter {
     console.log('Start fetching...', url);
 
     const page = await this.browser.newPage();
-    page.setViewport({ width: 1080, height: 720});
+    page.setViewport({ width: 1280, height: 720});
+
     await page.goto(url, {waitUntil: 'domcontentloaded'});
 
-    await page.waitFor(() => !!document.querySelector('#sufei-dialog-close'));
-    await page.$eval('#sufei-dialog-close', el => el.click());
+    await page.waitFor(() => !!document.querySelector('#J_UlThumb'));
+    // await page.waitFor(() => !!document.querySelector('#sufei-dialog-close'));
+    // await page.$eval('#sufei-dialog-close', el => el.click());
 
-    let coverUrls = await page.$$eval('ul#J_UlThumb>li>a>img', els => {
+    const coverUrls = (await page.$$eval('#J_UlThumb>li img', els => {
       return els.map(el => el.src);
-    });
-    coverUrls = coverUrls.map(url => {
-      return url.replace(/_\d+x\d+.+$/, '');
-    });
+    }))
+      .map(url => url.replace(/_\d+x\d+.+$/, ''));
     //console.log(coverUrls);
 
     await page.waitFor(() => !!document.querySelector('.vjs-center-start'));
     await page.$eval('.vjs-center-start', el => el.click());
 
-    let videoUrls = [];
-    videoUrls.push(await page.$eval('video.lib-video', el => el.src));
+    const videoUrls = [await page.$eval('video.lib-video', el => el.src)];
     //console.log(videoUrls);
 
-    const pictures = await page.$$eval('#description img', els => els.map(el => {
-      if (el.attributes['data-ks-lazyload']) {
-        return el.attributes['data-ks-lazyload'].value;
-      }
-    }).filter(v => v));
+    await page.evaluate(() => {
+      window.scrollTo(0, screen.availHeight);
+      setTimeout(() => {
+        window.scrollTo(0, screen.availHeight);
+      }, 10);
+    });
+
+    await page.waitFor(() => !!document.querySelector('#description img'));
+    let pictures = await page.$$eval('#description img', els => els.map(el => {
+      return el.attributes['data-ks-lazyload'] ? el.attributes['data-ks-lazyload'].value : el.innerHTML;
+    }));
+
+    pictures = pictures
+      .filter(v => v)
+      .map(url => url.replace(/_\d+x\d+.+$/, ''));
 
     await page.close();
 
