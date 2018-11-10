@@ -31,7 +31,7 @@ async function main() {
 
 
   const reGetter = new ResourcesGetter();
-  console.log(await reGetter.getByPageUrl('https://detail.tmall.com/item.htm?spm=a220o.1000855.w5003-21040130750.14.53cf45c8PKcYFB&id=572209338779&scene=taobao_shop'))
+  // console.log(await reGetter.getByPageUrl('https://detail.tmall.com/item.htm?spm=a220o.1000855.w5003-21040130750.14.53cf45c8PKcYFB&id=572209338779&scene=taobao_shop'))
 
   // logger
   app.use(async (ctx, next) => {
@@ -64,7 +64,7 @@ async function main() {
 
       let url = matches[0];
 
-      url = url.replace('detail.tmall.com', 'detail.m.tmall.com');
+      url = url.replace('detail.m.tmall.com', 'detail.tmall.com');
 
       const resources = await reGetter.getByPageUrl(url);
       console.log(resources);

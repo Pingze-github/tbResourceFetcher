@@ -38,10 +38,14 @@ class ResourcesGetter {
       .map(url => url.replace(/_\d+x\d+.+$/, ''));
     //console.log(coverUrls);
 
-    await page.waitFor(() => !!document.querySelector('.vjs-center-start'));
-    await page.$eval('.vjs-center-start', el => el.click());
+    let videoUrls = [];
+    try {
+      await page.waitFor(() => !!document.querySelector('.vjs-center-start'), {timeout: 3000});
+      await page.$eval('.vjs-center-start', el => el.click());
+      videoUrls = [await page.$eval('video.lib-video', el => el.src)];
+    } catch (e) {
+    }
 
-    const videoUrls = [await page.$eval('video.lib-video', el => el.src)];
     //console.log(videoUrls);
 
     await page.evaluate(() => {
