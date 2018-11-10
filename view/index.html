@@ -14,7 +14,7 @@
     if (data.videos) {
       for (var video of data.videos) {
         $result.append(
-          $('<video controls="controls">此视频无法播放</video>').attr('src', video)
+          $('<video controls="controls" autoplay="autoplay">此视频无法播放</video>').attr('src', video)
         )
       }
     }
@@ -33,11 +33,37 @@
   }
 
   $(document).ready(function(){
+
+
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+
+
+        // $(document.body).bind({
+        //   copy: function(e) {//copy事件
+        //     var cpTxt = "复制的数据";
+        //     var clipboardData = window.clipboardData; //for IE
+        //     if (!clipboardData) { // for chrome
+        //       clipboardData = e.originalEvent.clipboardData;
+        //     } //可以获取用户选中复制的数据
+        //     cpTxt = clipboardData.getData('Text');
+        //     alert(cpTxt);
+        //     $('#message').text('Copy Data : ' + cpTxt);
+        //     return false;//否则设不生效
+        //   }});
+
+        // const clipdata = window.clipboardData.getData('text/plain');
+        // console.log(clipdata);
+
+        // window.confirm('focus')
+      }
+    });
+
     var fetching = false;
     $('#key').click(() => {
-      // $('#key').val('');
+      $('#key').val('');
     });
-    $('#submit').click(() => {
+    $('#submit').click(function () {
       var key = $('#key').val();
 
       if (fetching) return;
@@ -56,7 +82,10 @@
           renderResult(data);
         }
 
-      })
+      }).error((xhr,errorText,errorType) => {
+        fetching = false;
+        $('#msg').text('获取失败:', errorText);
+      });
     });
   });
 
